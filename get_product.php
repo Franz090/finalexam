@@ -16,6 +16,7 @@ if ($result->num_rows > 0) {
     $html .= "<th>Expiry Date</th>";
     $html .= "<th>Available Inventory</th>";
     $html .= "<th>Available Inventory Cost</th>";
+    $html .= "<th>Image</th>";
     // Add more table headers if needed
     $html .= "</tr>";
 
