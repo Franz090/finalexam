@@ -1,5 +1,7 @@
 <?php
-include('./connections/db.php');
+include_once('./connections/db.php');
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 // Fetch data from the database
 $sql = "SELECT * FROM products";
 $result = $conn->query($sql);
@@ -28,6 +30,10 @@ if ($result->num_rows > 0) {
         $html .= "<td>" . $row['expiry_date'] . "</td>";
         $html .= "<td>" . $row['inventory'] . "</td>";
         $html .= "<td>$" . ($row['inventory'] * $row['price']) . "</td>";
+
+        // Display image using the <img> tag
+        $html .= "<td><img src='" . $row['image'] . "' alt='Product Image' style='max-width: 100px; max-height: 100px;'></td>";
+
         // Add more table data if needed
         $html .= "</tr>";
     }

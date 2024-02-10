@@ -2,16 +2,15 @@ $(document).ready(function() {
     // Function to add a product using Ajax
     function addProduct() {
         var formData = new FormData($('#productForm')[0]);
-
         $.ajax({
             type: 'POST',
             url: 'add_product.php',
-             formData,
+            data: formData,
             contentType: false,
- processData: false,
+            processData: false,
             success: function(response) {
                 console.log(response);
-
+        
                 // Reload product display after adding
                 displayProducts();
             },
@@ -41,4 +40,23 @@ $(document).ready(function() {
       
         addProduct();
     });
+});
+document.getElementById('image').addEventListener('change', function (e) {
+    const previewImage = document.getElementById('previewImage');
+    const fileInput = e.target;
+    const file = fileInput.files[0];
+
+    if (file) {
+        const reader = new FileReader();
+
+        reader.onload = function (e) {
+            previewImage.src = e.target.result;
+            previewImage.style.display = 'block';
+        };
+
+        reader.readAsDataURL(file);
+    } else {
+        previewImage.src = '';
+        previewImage.style.display = 'none';
+    }
 });
