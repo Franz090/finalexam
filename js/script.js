@@ -1,16 +1,22 @@
 $(document).ready(function() {
-    // Function to add product using Ajax
+    // Function to add a product using Ajax
     function addProduct() {
         var formData = new FormData($('#productForm')[0]);
+
         $.ajax({
             type: 'POST',
             url: 'add_product.php',
-            data: formData,
+             formData,
             contentType: false,
-            processData: false,
+ processData: false,
             success: function(response) {
+                console.log(response);
+
                 // Reload product display after adding
                 displayProducts();
+            },
+            error: function(error) {
+                console.error("Error adding product:", error);
             }
         });
     }
@@ -29,4 +35,10 @@ $(document).ready(function() {
 
     // Initial product display
     displayProducts();
+
+    // Add product on form submit
+    $('#productForm').on('submit', function(e) {
+      
+        addProduct();
+    });
 });
