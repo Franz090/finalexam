@@ -46,7 +46,15 @@ document.getElementById('image').addEventListener('change', function (e) {
     const fileInput = e.target;
     const file = fileInput.files[0];
 
+    const maxFileSizeMB = 10; // Maximum file size allowed in MB
+
     if (file) {
+        if (file.size > maxFileSizeMB * 1024 * 1024) {
+            alert("Error: File is too large. Maximum allowed size is " + maxFileSizeMB + " MB.");
+            fileInput.value = ''; // Clear the file input
+            return;
+        }
+
         const reader = new FileReader();
 
         reader.onload = function (e) {

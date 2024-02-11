@@ -31,11 +31,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $uploadOk = 0;
     }
 
-    // Check file size
-    if ($_FILES["image"]["size"] > 500000) {
-        echo "Error: File is too large.";
-        $uploadOk = 0;
-    }
+    $maxFileSize = 10 * 1024 * 1024; // 10 MB (you can adjust this value)
+
+// Check file size
+if ($_FILES["image"]["size"] > $maxFileSize) {
+    echo "Error: File is too large. Maximum allowed size is " . ($maxFileSize / (1024 * 1024)) . " MB.";
+    $uploadOk = 0;
+}
 
     // Allow certain file formats
     $allowedFormats = ["jpg", "jpeg", "png", "gif"];
