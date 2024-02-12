@@ -136,3 +136,22 @@ $(document).ready(function() {
         });
     }
 });
+function deleteProduct(productId) {
+    if (confirm("Are you sure you want to delete this product?")) {
+        $.ajax({
+            type: 'POST',
+            url: 'delete_product.php', // Update this URL with the actual endpoint to handle delete operation
+            data: {id: productId}, // Send the product ID to be deleted
+            success: function(response) {
+                console.log("Success:", response); // Log successful response
+                // Reload the page or update the product display
+                displayProducts(); // Assuming you have a function to refresh the product display
+                alert("Product successfully deleted!");
+            },
+            error: function(error) {
+                console.error("Error:", error); // Log error response
+                alert("Error deleting product. Please try again.");
+            }
+        });
+    }
+}

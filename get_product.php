@@ -96,15 +96,18 @@ if ($result->num_rows > 0) {
         $html .= "<td>" . $row['name'] . "</td>";
         $html .= "<td>" . $row['unit'] . "</td>";
         $html .= "<td>$" . $row['price'] . "</td>";
-        $html .= "<td>" . $row['expiry_date'] . "</td>";
+        $formatted_date = date("F j, Y", strtotime($row['expiry_date']));
+        $html .= "<td>" . $formatted_date . "</td>";
         $html .= "<td>" . $row['inventory'] . "</td>";
         $html .= "<td>$" . ($row['inventory'] * $row['price']) . "</td>";
         // Display image using the <img> tag
         $html .= "<td><img src='" . $row['image'] . "' alt='Product Image' style='max-width: 100px; max-height: 100px;'></td>";
         // Add update and delete buttons
         $html .= "<td>";
-        $html .= "<button>Update</button>  ";
-        $html .= "<button>Delete</button>";
+        $html .= "<div class='text-center'>";
+        $html .= "<button class='btn btn-warning' data-bs-toggle='modal' data-bs-target='#exampleModal1' data-bs-whatever='@mdo'>Update</button>";
+        $html .= "<button class='btn-danger btn' onclick='deleteProduct(" . $row['id'] . ")'>Delete</button>";
+        $html .= "</div>";
         $html .= "</td>";
         // Add more table data if needed
         $html .= "</tr>";
@@ -193,6 +196,26 @@ $(document).ready(function() {
             <input id="image" type="file" class="form-control" accept="image/*" name="image" autocomplete="off" required/>
           </div>
         </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-primary" id="addProductBtn">Add Product</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="exampleModal1" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Update Product</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="productForm" method="post" enctype="multipart/form-data">
+
+          </form>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
