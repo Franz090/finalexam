@@ -3,7 +3,6 @@ function getImageElementById(id) {
 }
 
 function addProduct() {
-    // Perform validation
     var productName = $('#name').val();
     var unit = $('#unit').val();
     var price = $('#price').val();
@@ -11,50 +10,50 @@ function addProduct() {
     var inventory = $('#inventory').val();
     var image = $('#image').val();
 
-    // Regular expressions for validation
+  
     var nameRegex = /^[A-Za-z\d\s]+$/;
     var unitRegex = /^[A-Za-z\d\s]+$/;
-    var priceRegex = /^\d+(\.\d{1,2})?$/; // Allows decimal numbers with up to 2 decimal places
-    var expiryDateRegex = /^\d{4}-\d{2}-\d{2}$/; // Assumes date format in YYYY-MM-DD
+    var priceRegex = /^\d+(\.\d{1,2})?$/; 
+    var expiryDateRegex = /^\d{4}-\d{2}-\d{2}$/; 
     var inventoryRegex = /^\d+$/;
 
-    // Check if any field is empty
+    
     if (!productName || !unit || !price || !expiryDate || !inventory || !image) {
         alert("Please fill in all fields.");
         return;
     }
 
-    // Check if name matches the pattern
+   
     if (!nameRegex.test(productName)) {
         alert("Product name must contain only letters, numbers, or spaces.");
         return;
     }
 
-    // Check if unit matches the pattern
+   
     if (!unitRegex.test(unit)) {
         alert("Unit must contain only letters, numbers, or spaces.");
         return;
     }
 
-    // Check if price matches the pattern
+
     if (!priceRegex.test(price)) {
         alert("Price must be a valid decimal number.");
         return;
     }
 
-    // Check if expiry date matches the pattern
+   
     if (!expiryDateRegex.test(expiryDate)) {
         alert("Expiry date must be in YYYY-MM-DD format.");
         return;
     }
 
-    // Check if inventory matches the pattern
+  
     if (!inventoryRegex.test(inventory)) {
         alert("Available inventory must be a valid integer.");
         return;
     }
 
-    // Create FormData object
+   
     var formData = new FormData($('#productForm')[0]);
     
     $.ajax({
@@ -64,15 +63,12 @@ function addProduct() {
         contentType: false,
         processData: false,
         success: function(response) {
-            console.log("Success:", response); // Log successful response
-            // Reload the page
+            console.log("Success:", response); 
             location.reload();
-            // Show success alert
             alert("Product successfully added!");
         },
         error: function(error) {
-            console.error("Error:", error); // Log error response
-            // Show error alert
+            console.error("Error:", error); 
             alert("Error adding product. Please try again.");
         }
     });
@@ -82,29 +78,23 @@ function displayProducts() {
         type: 'GET',
         url: 'get_product.php',
         success: function(response) {
-            // Update the product display section with the received data
             $('#productDisplay').html(response);
         }
     });
 }
 
 $(document).ready(function() {
-    // Initialize DataTable
+  
     var table = $('#myTable').DataTable({
-        paging: true, // Enable pagination
-        searching: true, // Enable search functionality
-        ordering: true, // Enable ordering (sorting) of columns
+        paging: true,
+        searching: true,
+        ordering: true, 
         "oLanguage": {
             "sEmptyTable": "No Products Found"
         }
     });
-
-  
-   
-    // Initial product display
     displayProducts();
 
-    // Event listener for file input change
     var imageElement = getImageElementById('image');
     if (imageElement) {
         imageElement.addEventListener('change', function (e) {
@@ -112,12 +102,12 @@ $(document).ready(function() {
             const fileInput = e.target;
             const file = fileInput.files[0];
 
-            const maxFileSizeMB = 10; // Maximum file size allowed in MB
+            const maxFileSizeMB = 10;
 
             if (file) {
                 if (file.size > maxFileSizeMB * 1024 * 1024) {
                     alert("Error: File is too large. Maximum allowed size is " + maxFileSizeMB + " MB.");
-                    fileInput.value = ''; // Clear the file input
+                    fileInput.value = ''; 
                     return;
                 }
 
@@ -140,16 +130,15 @@ function deleteProduct(productId) {
     if (confirm("Are you sure you want to delete this product?")) {
         $.ajax({
             type: 'POST',
-            url: 'delete_product.php', // Update this URL with the actual endpoint to handle delete operation
-            data: {id: productId}, // Send the product ID to be deleted
+            url: 'delete_product.php', 
+            data: {id: productId}, 
             success: function(response) {
-                console.log("Success:", response); // Log successful response
-                // Reload the page or update the product display
-                displayProducts(); // Assuming you have a function to refresh the product display
+                console.log("Success:", response); 
+                displayProducts(); 
                 alert("Product successfully deleted!");
             },
             error: function(error) {
-                console.error("Error:", error); // Log error response
+                console.error("Error:", error);
                 alert("Error deleting product. Please try again.");
             }
         });
@@ -158,27 +147,25 @@ function deleteProduct(productId) {
 
 
 function updateProduct() {
-    // Get form data
     var formData = new FormData($('#updateProductForm')[0]);
-    var productId = $('#updateId').val(); // Retrieve product ID from the form
+    var productId = $('#updateId').val(); 
     formData.append('id', productId);
    
     $.ajax({
         type: 'POST',
-        url: 'get_product.php', // Update this URL with the actual endpoint to handle update operation
+        url: 'get_product.php',
         data: formData,
         contentType: false,
         processData: false,
         success: function(response) {
-            console.log("Success:", response); // Log successful response
-            // Reload the page or update the product display
-            displayProducts(); // Assuming you have a function to refresh the product display
+            console.log("Success:", response); 
+            displayProducts(); 
             populateUpdateForm(formData);
-            $('#exampleModal1').modal('hide'); // Close the modal
+            $('#exampleModal1').modal('hide'); 
             alert("Product successfully updated!");
         },
         error: function(error) {
-            console.error("Error:", error); // Log error response
+            console.error("Error:", error);
             alert("Error updating product. Please try again.");
         }
     });

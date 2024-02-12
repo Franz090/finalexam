@@ -3,21 +3,20 @@ include_once('./connections/db.php');
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-// Existing code
+
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_FILES["image"])) {
-    // Process form data and insert into the database
     $name = $_POST['name'];
     $unit = $_POST['unit'];
     $price = $_POST['price'];
     $expiry_date = $_POST['expiry_date'];
     $inventory = $_POST['inventory'];
 
-    // Add more validation and sanitation as needed
+   
     if (empty($price) || !is_numeric($price)) {
         return;
     }
 
-    // Handle image upload
+   
     if (!empty($_FILES["image"]["name"])) {
 
     $targetDir = "uploads/";
@@ -26,46 +25,46 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_FILES["image"])) {
     $uploadOk = 1;
     $imageFileType = strtolower(pathinfo($image, PATHINFO_EXTENSION));
 
-    // Check if image file is a actual image or fake image
+   
     $check = getimagesize($_FILES["image"]["tmp_name"]);
     if ($check === false) {
         $uploadOk = 0;
     }
 
-    $maxFileSize = 10 * 1024 * 1024; // 10 MB (you can adjust this value)
+    $maxFileSize = 10 * 1024 * 1024; 
 
-    // Check file size
+   
     if ($_FILES["image"]["size"] > $maxFileSize) {
         $uploadOk = 0;
     }
 
-    // Allow certain file formats
+   
     $allowedFormats = ["jpg", "jpeg", "png", "gif"];
     if (!in_array($imageFileType, $allowedFormats)) {
         $uploadOk = 0;
     }
 
-    // Check if $uploadOk is set to 0 by an error
+   
     if ($uploadOk == 1) {
-        // If everything is OK, try to upload file
+        
         if (move_uploaded_file($_FILES["image"]["tmp_name"], $image)) {
-            // Insert data into the database
+           
             $sql = "INSERT INTO products (name, unit, price, expiry_date, inventory, image) 
                     VALUES ('$name', '$unit', '$price', '$expiry_date', '$inventory', '$image')";
 
             $result = $conn->query($sql);
 
             if ($result !== TRUE) {
-                // Handle database insertion error
+               
             }
         }
         }
     }
 }
 
-// New code
+
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["updateName"])) {
-    // Process form data and update the product in the database
+   
     $id = $_POST['updateId']; 
     $name = $_POST['updateName'];
     $unit = $_POST['updateUnit'];
@@ -74,20 +73,29 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["updateName"])) {
     $inventory = $_POST['updateInventory'];
     
 
-    // Add more validation and sanitation as needed
+   
     if (empty($price) || !is_numeric($price)) {
         return;
     }
 
-    // Handle image upload if provided
     if (!empty($_FILES["updateImage"]["name"])) {
-        // Similar image handling logic as in the add_product.php file
-    }
+      $targetDir = "uploads/";
+      $image = $targetDir . basename($_FILES["updateImage"]["name"]);
+  } else {
+      
+      $image = ''; 
+  }
+  
 
-    // Update the product in the database
-    $sql = "UPDATE products 
-            SET name='$name', unit='$unit', price='$price', expiry_date='$expiry_date', inventory='$inventory' 
-            WHERE id='$id'";
+  $sql = "UPDATE products 
+  SET name='$name', unit='$unit', price='$price', expiry_date='$expiry_date', inventory='$inventory'";
+
+if (!empty($image)) {
+$sql .= ", image='$image'";
+}
+$sql .= " WHERE id='$id'";
+
+            
 
     if ($conn->query($sql) === TRUE) {
         echo "Product updated successfully";
@@ -96,11 +104,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["updateName"])) {
     }
 }
 
-// Fetch data from the database
+
 $sql = "SELECT * FROM products";
 $result = $conn->query($sql);
 
-// Generate HTML for displaying products
 $html = "<div class='container'>";
 $html .= "<div class='row'>";
 $html .= "<div class='col-6'><h2>Product Information</h2></div>";
@@ -116,8 +123,7 @@ $html .= "<th>Expiry Date</th>";
 $html .= "<th>Available Inventory</th>";
 $html .= "<th>Available Inventory Cost</th>";
 $html .= "<th>Image</th>";
-$html .= "<th>Action</th>"; // New column for actions
-// Add more table headers if needed
+$html .= "<th>Action</th>";
 $html .= "</tr>";
 $html .= "</thead>";
 $html .= "<tbody>";
@@ -132,16 +138,13 @@ if ($result->num_rows > 0) {
         $html .= "<td>" . $formatted_date . "</td>";
         $html .= "<td>" . $row['inventory'] . "</td>";
         $html .= "<td>$" . ($row['inventory'] * $row['price']) . "</td>";
-        // Display image using the <img> tag
         $html .= "<td><img src='" . $row['image'] . "' alt='Product Image' style='max-width: 100px; max-height: 100px;'></td>";
-        // Add update and delete buttons
         $html .= "<td>";
         $html .= "<div class='text-center'>";
         $html .= "<button class='btn btn-warning' data-bs-toggle='modal' data-bs-target='#exampleModal1' data-bs-whatever='@mdo' onclick='populateUpdateForm(" . json_encode($row) . ")'>Update</button>";
         $html .= "<button class='btn-danger btn' onclick='deleteProduct(" . $row['id'] . ")'>Delete</button>";
         $html .= "</div>";
         $html .= "</td>";
-        // Add more table data if needed
         $html .= "</tr>";
     } 
 } 
@@ -162,21 +165,18 @@ echo $html;
     $('#updatePrice').val(productData.price);
     $('#updateExpiryDate').val(productData.expiry_date);
     $('#updateInventory').val(productData.inventory);
-    
+    $('#updateImage').html('<img src="' + productData.image + '" alt="Product Image" style="max-width: 100px; max-height: 100px;">');
  
 }
 $(document).ready(function() {
-    // Initialize DataTable
     var table = $('#myTable').DataTable({
-        paging: true, // Enable pagination
-        searching: true, // Enable search functionality
-        ordering: true, // Enable ordering (sorting) of columns
+        paging: true, 
+        searching: true,
+        ordering: true, 
         "oLanguage": {
             "sEmptyTable": "No Products Found"
         }
     });
-
-    // Custom function to include all records for the sorted column
     $('#myTable thead').on('click', 'th', function() {
         var columnIndex = table.column($(this)).index();
         var sorting = table.order()[0];
@@ -184,19 +184,17 @@ $(document).ready(function() {
         var sortOrder = sorting[1];
 
         if (sortedColumnIndex === columnIndex) {
-            // Column is already sorted, include all records
             table.page.len(-1).draw();
         }
     });
 });
 
-     // Add product on button click
+    
      $('#addProductBtn').on('click', function(e) {
         addProduct();
     });
     $('#updateProductBtn').on('click', function(e) {
-        e.preventDefault(); // Prevent default form submission
-        // Perform AJAX update request
+        e.preventDefault(); 
         updateProduct();
     });
 
@@ -289,7 +287,7 @@ $(document).ready(function() {
             <input type="number" class="form-control" name="updateInventory" id="updateInventory" autocomplete="off" required>
           </div>
           
-          <!-- Add more fields if needed -->
+  
           
           <div class="form-group">
             <label for="updateImage">Product Image:</label>

@@ -15,7 +15,7 @@
   
     
     <div id="productDisplay">
-        <!-- Display information will be shown here -->
+       
     </div>
 
   
