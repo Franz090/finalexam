@@ -32,39 +32,48 @@ $(document).ready(function() {
         });
     }
 
+    // Function to get image element by ID
+    function getImageElementById(id) {
+        return document.getElementById(id);
+    }
+
     // Initial product display
     displayProducts();
 
     // Add product on form submit
     $('#productForm').on('submit', function(e) {
-      
         addProduct();
     });
-});
-document.getElementById('image').addEventListener('change', function (e) {
-    const previewImage = document.getElementById('previewImage');
-    const fileInput = e.target;
-    const file = fileInput.files[0];
 
-    const maxFileSizeMB = 10; // Maximum file size allowed in MB
+    // Event listener for file input change
+    var imageElement = getImageElementById('image');
+    if (imageElement) {
+        imageElement.addEventListener('change', function (e) {
+            const previewImage = getImageElementById('previewImage');
+            const fileInput = e.target;
+            const file = fileInput.files[0];
 
-    if (file) {
-        if (file.size > maxFileSizeMB * 1024 * 1024) {
-            alert("Error: File is too large. Maximum allowed size is " + maxFileSizeMB + " MB.");
-            fileInput.value = ''; // Clear the file input
-            return;
-        }
+            const maxFileSizeMB = 10; // Maximum file size allowed in MB
 
-        const reader = new FileReader();
+            if (file) {
+                if (file.size > maxFileSizeMB * 1024 * 1024) {
+                    alert("Error: File is too large. Maximum allowed size is " + maxFileSizeMB + " MB.");
+                    fileInput.value = ''; // Clear the file input
+                    return;
+                }
 
-        reader.onload = function (e) {
-            previewImage.src = e.target.result;
-            previewImage.style.display = 'block';
-        };
+                const reader = new FileReader();
 
-        reader.readAsDataURL(file);
-    } else {
-        previewImage.src = '';
-        previewImage.style.display = 'none';
+                reader.onload = function (e) {
+                    previewImage.src = e.target.result;
+                    previewImage.style.display = 'block';
+                };
+
+                reader.readAsDataURL(file);
+            } else {
+                previewImage.src = '';
+                previewImage.style.display = 'none';
+            }
+        });
     }
 });
