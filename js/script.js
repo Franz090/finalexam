@@ -155,3 +155,31 @@ function deleteProduct(productId) {
         });
     }
 }
+
+
+function updateProduct() {
+    // Get form data
+    var formData = new FormData($('#updateProductForm')[0]);
+    var productId = $('#updateId').val(); // Retrieve product ID from the form
+    formData.append('id', productId);
+   
+    $.ajax({
+        type: 'POST',
+        url: 'get_product.php', // Update this URL with the actual endpoint to handle update operation
+        data: formData,
+        contentType: false,
+        processData: false,
+        success: function(response) {
+            console.log("Success:", response); // Log successful response
+            // Reload the page or update the product display
+            displayProducts(); // Assuming you have a function to refresh the product display
+            populateUpdateForm(formData);
+            $('#exampleModal1').modal('hide'); // Close the modal
+            alert("Product successfully updated!");
+        },
+        error: function(error) {
+            console.error("Error:", error); // Log error response
+            alert("Error updating product. Please try again.");
+        }
+    });
+}

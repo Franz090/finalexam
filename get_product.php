@@ -64,6 +64,38 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_FILES["image"])) {
 }
 
 // New code
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["updateName"])) {
+    // Process form data and update the product in the database
+    $id = $_POST['updateId']; 
+    $name = $_POST['updateName'];
+    $unit = $_POST['updateUnit'];
+    $price = $_POST['updatePrice'];
+    $expiry_date = $_POST['updateExpiryDate'];
+    $inventory = $_POST['updateInventory'];
+    
+
+    // Add more validation and sanitation as needed
+    if (empty($price) || !is_numeric($price)) {
+        return;
+    }
+
+    // Handle image upload if provided
+    if (!empty($_FILES["updateImage"]["name"])) {
+        // Similar image handling logic as in the add_product.php file
+    }
+
+    // Update the product in the database
+    $sql = "UPDATE products 
+            SET name='$name', unit='$unit', price='$price', expiry_date='$expiry_date', inventory='$inventory' 
+            WHERE id='$id'";
+
+    if ($conn->query($sql) === TRUE) {
+        echo "Product updated successfully";
+    } else {
+        echo "Error updating product: " . $conn->error;
+    }
+}
+
 // Fetch data from the database
 $sql = "SELECT * FROM products";
 $result = $conn->query($sql);
@@ -105,7 +137,7 @@ if ($result->num_rows > 0) {
         // Add update and delete buttons
         $html .= "<td>";
         $html .= "<div class='text-center'>";
-        $html .= "<button class='btn btn-warning' data-bs-toggle='modal' data-bs-target='#exampleModal1' data-bs-whatever='@mdo'>Update</button>";
+        $html .= "<button class='btn btn-warning' data-bs-toggle='modal' data-bs-target='#exampleModal1' data-bs-whatever='@mdo' onclick='populateUpdateForm(" . json_encode($row) . ")'>Update</button>";
         $html .= "<button class='btn-danger btn' onclick='deleteProduct(" . $row['id'] . ")'>Delete</button>";
         $html .= "</div>";
         $html .= "</td>";
@@ -122,8 +154,17 @@ $conn->close();
 
 echo $html;
 ?>
-
 <script>
+  function populateUpdateForm(productData) {
+    $('#updateId').val(productData.id); 
+    $('#updateName').val(productData.name);
+    $('#updateUnit').val(productData.unit);
+    $('#updatePrice').val(productData.price);
+    $('#updateExpiryDate').val(productData.expiry_date);
+    $('#updateInventory').val(productData.inventory);
+    
+ 
+}
 $(document).ready(function() {
     // Initialize DataTable
     var table = $('#myTable').DataTable({
@@ -152,6 +193,11 @@ $(document).ready(function() {
      // Add product on button click
      $('#addProductBtn').on('click', function(e) {
         addProduct();
+    });
+    $('#updateProductBtn').on('click', function(e) {
+        e.preventDefault(); // Prevent default form submission
+        // Perform AJAX update request
+        updateProduct();
     });
 
 </script>
@@ -213,13 +259,47 @@ $(document).ready(function() {
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <form id="productForm" method="post" enctype="multipart/form-data">
-
-          </form>
+        <form id="updateProductForm" method="post" enctype="multipart/form-data">
+        <div class="form-group">
+   
+    <input type="hidden" class="form-control" name="updateId" id="updateId" autocomplete="off" required>
+</div>
+          <div class="form-group">
+            <label for="updateName">Product Name:</label>
+            <input type="text" class="form-control" name="updateName" id="updateName" autocomplete="off" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="updateUnit">Unit:</label>
+            <input type="text" class="form-control" name="updateUnit" id="updateUnit" autocomplete="off" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="updatePrice">Price:</label>
+            <input type="number" step="0.01" class="form-control" name="updatePrice" id="updatePrice" autocomplete="off" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="updateExpiryDate">Expiry Date:</label>
+            <input type="date" class="form-control" name="updateExpiryDate" id="updateExpiryDate" autocomplete="off" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="updateInventory">Available Inventory:</label>
+            <input type="number" class="form-control" name="updateInventory" id="updateInventory" autocomplete="off" required>
+          </div>
+          
+          <!-- Add more fields if needed -->
+          
+          <div class="form-group">
+            <label for="updateImage">Product Image:</label>
+            <input id="updateImage" type="file" class="form-control" accept="image/*" name="updateImage" autocomplete="off"/>
+          </div>
+        </form>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="submit" class="btn btn-primary" id="addProductBtn">Add Product</button>
+        <button type="submit" class="btn btn-primary" id="updateProductBtn">Update Product</button>
       </div>
     </div>
   </div>
